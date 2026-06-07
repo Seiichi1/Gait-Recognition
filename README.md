@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![M.Tech Thesis](https://img.shields.io/badge/M.Tech-Thesis%20Project-gold?style=flat-square)](https://lpu.in)
 
-[**Live Demo**](https://gait-recognition.streamlit.app) &nbsp;·&nbsp; [**Paper (IEEE)**](docs/paper.pdf) &nbsp;·&nbsp; [**Presentation**](docs/presentation.pptx)
+[**Live Demo**](https://gait-recognition-mzhcedm4cfwq6ppjmieohp.streamlit.app/) &nbsp;·&nbsp; [**Paper (IEEE)**](docs/paper.pdf) &nbsp;·&nbsp; [**Presentation**](docs/presentation.pptx)
 
 </div>
 
