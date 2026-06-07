@@ -1,0 +1,145 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Model weights (too large for GitHub)
+*.pth
+*.pt
+*.ckpt
+
+# Dataset (never push raw data)
+CASIA-B/
+CASIA-B-Occ/
+OccGait/
+data/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Experiment outputs
+runs/
+wandb/
+outputs/
+report_figures/
+
+# Secrets
+*.env
+.env
+
+# ── Datasets & experiment outputs ──────────────────────
+data/
+checkpoints/
+CA/
+ETP/
+CASIA-B*/
+OccGait/
+outputs/
+runs/
+wandb/
+graphify-out/
+
+# ── Virtual environments ────────────────────────────────
+.venv/
+venv/
+demo/*/myenv/
+demo/*/.venv/
+
+# ── Python cache ────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+
+# ── Model weights ───────────────────────────────────────
+*.pth
+*.pt
+*.ckpt
+
+# ── LaTeX build artifacts ───────────────────────────────
+*.aux
+*.log
+*.synctex.gz
+
+# ── Sensitive / personal ────────────────────────────────
+plag report/
+scratch/
+
+# ── IDE & tool internals ────────────────────────────────
+.vercel/
+.run/
+.idea/
+.vscode/
+
+# ── Redundant demo folder ───────────────────────────────
+demo/
+
+# ── Papers folder (research notes, not code) ────────────
+papers/
+
+# ── Empty placeholder ───────────────────────────────────
+frontend/
+
+# ── Image Processing lab work ───────────────────────────
+Image_Processing_Lab/
+
+# ── PDF files (papers, drafts) ──────────────────────────
+*.pdf
+
+# ── LaTeX files ─────────────────────────────────────────
+*.tex
+*.aux
+*.log
+*.synctex.gz
+
+# ── Word/PowerPoint/Office files ────────────────────────
+*.docx
+*.pptx
+*.doc
+~$*
+
+# ── Bibliography/research scripts ───────────────────────
+categorize_papers.py
+create_bibliography.py
+extract_pdf.py
+gen_complete_bib.py
+map_citations.py
+parse_papers.py
+select_papers.py
+
+# ── Bibliography data files ──────────────────────────────
+bibliography.json
+categorized_papers.json
+citation_mapping.json
+complete_bibliography.txt
+parsed_papers.json
+pdf_content.txt
+selected_papers.json
+Papers.csv
+
+# ── Personal/planning docs ───────────────────────────────
+implementation_plan.md
+FIGURES_README.md
+PROJECT_STATUS.md
+Occlusion_Detection_UI_Prompt.md
+"project plan.html"
+
+# ── Empty/irrelevant folders ─────────────────────────────
+api/

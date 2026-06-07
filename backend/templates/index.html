@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>PANOPTICON_V.04 | GAIT_RECOGNITION</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#00ffff",
+                        "secondary": "#ff51fa",
+                        "tertiary": "#ffff00",
+                        "surface": "#0e0e0e",
+                        "surface-container": "#191919",
+                        "surface-container-lowest": "#000000",
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-surface-container-lowest font-body selection:bg-primary-container selection:text-black">
+    <!-- Scanline Overlay -->
+    <div class="fixed inset-0 scanline-overlay z-50 opacity-10 pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="bg-black/80 backdrop-blur-xl text-cyan-400 font-headline uppercase tracking-widest flex justify-between items-center w-full px-6 h-16 fixed top-0 z-[60] border-b border-cyan-900/50">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-cyan-400">fingerprint</span>
+            <h1 class="text-xl md:text-2xl font-black text-cyan-400 drop-shadow-[0_0_8px_rgba(0,255,255,0.5)]">PANOPTICON_V.04</h1>
+        </div>
+        <div class="text-[10px] font-mono text-cyan-900 hidden md:block">
+            STATUS: SECURE_CONNECTION_ESTABLISHED
+        </div>
+    </header>
+
+    <main class="pt-24 pb-24 px-4 flex flex-col gap-6 max-w-4xl mx-auto">
+        <!-- Top Status Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="bg-surface-container border-l-2 border-cyan-400 p-4 bracket-corners">
+                <span class="text-[10px] font-mono text-tertiary uppercase opacity-70">DATA_STREAM</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="h-2 w-2 bg-cyan-400 animate-pulse"></span>
+                    <span class="text-sm font-mono text-cyan-400 font-bold uppercase" id="status-badge">Awaiting Input</span>
+                </div>
+            </div>
+            <div class="bg-surface-container border-l-2 border-fuchsia-500 p-4 bracket-corners">
+                <span class="text-[10px] font-mono text-tertiary uppercase opacity-70">NEURAL_ENGINE</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-sm font-mono text-fuchsia-500 font-bold">OCGNET_V3.1_ACTIVE</span>
+                </div>
+            </div>
+            <div class="bg-surface-container border-l-2 border-yellow-400 p-4 bracket-corners">
+                <span class="text-[10px] font-mono text-tertiary uppercase opacity-70">SYSTEM_UPTIME</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-sm font-mono text-yellow-400 font-bold" id="uptime-timer">00:00:00</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Side: Visualization -->
+            <div class="flex flex-col gap-4">
+                <section class="relative bg-black border border-cyan-900/30 overflow-hidden group bracket-corners" style="min-height:500px">
+                    <!-- RECON badge top-right -->
+                    <div class="absolute top-3 right-3 z-20 font-mono">
+                        <div class="bg-black/80 px-3 py-1 text-[10px] text-cyan-400 border border-cyan-400/30 flex items-center gap-2">
+                            <span class="h-1.5 w-1.5 bg-cyan-400 animate-ping"></span>
+                            RECON_MODE: STATIC_ANALYSIS
+                        </div>
+                    </div>
+
+                    <!-- Corner crosshairs -->
+                    <div class="absolute inset-0 pointer-events-none z-10">
+                        <div class="absolute top-4 left-4 w-6 h-6 border-t border-l border-cyan-400/20"></div>
+                        <div class="absolute top-4 right-4 w-6 h-6 border-t border-r border-cyan-400/20"></div>
+                        <div class="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-cyan-400/20"></div>
+                        <div class="absolute bottom-4 right-4 w-6 h-6 border-b border-r border-cyan-400/20"></div>
+                    </div>
+
+                    <!-- Placeholder shown before first scan -->
+                    <div id="occ-placeholder" class="w-full flex flex-col items-center justify-center gap-3 py-20 bg-[radial-gradient(circle,rgba(0,255,255,0.04)_0%,transparent_70%)]">
+                        <div class="text-cyan-400/30 text-5xl font-mono">⬡</div>
+                        <p class="text-zinc-600 font-mono text-[11px] tracking-widest">AWAITING_SCAN_INIT</p>
+                        <p class="text-zinc-700 font-mono text-[9px]">Select a protocol and run recognition</p>
+                    </div>
+
+                    <!-- Occlusion image — hidden until scan runs -->
+                    <div id="occ-image-wrap" class="hidden w-full flex items-center justify-center bg-[radial-gradient(circle,rgba(0,255,255,0.05)_0%,transparent_70%)] p-6">
+                        <img id="occ-image"
+                             src=""
+                             alt="Occlusion type visualization"
+                             class="max-h-[460px] w-full object-contain rounded-sm"
+                             style="image-rendering:auto; filter: drop-shadow(0 0 18px rgba(0,255,255,0.15))">
+                    </div>
+                </section>
+
+                <!-- Protocol Log below viewport -->
+                <div id="protocol-log" class="bg-surface-container border border-cyan-900/30 p-4 font-mono hidden">
+                    <div class="grid grid-cols-3 gap-4 text-[10px] mb-2">
+                        <div>
+                            <span class="text-zinc-500 block">PROTOCOL</span>
+                            <span id="log-protocol" class="text-cyan-400 font-bold">-</span>
+                        </div>
+                        <div>
+                            <span class="text-zinc-500 block">OCC_IMPACT</span>
+                            <span id="log-impact" class="text-yellow-400 font-bold">-</span>
+                        </div>
+                        <div>
+                            <span class="text-zinc-500 block">STATUS</span>
+                            <span class="text-green-400 font-bold">ACTIVE</span>
+                        </div>
+                    </div>
+                    <div class="text-[9px] text-zinc-400 leading-relaxed border-t border-zinc-800 pt-2" id="log-desc">-</div>
+                </div>
+
+                <!-- Input Controls -->
+                <section class="bg-surface p-6 border border-cyan-900/20 bracket-corners">
+                    <h2 class="text-xs font-mono font-bold tracking-widest text-tertiary mb-4 border-b border-cyan-900/30 pb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">tune</span>
+                        PROTOCOL_PARAMETERS
+                    </h2>
+                    
+                    <form id="recognition-form" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-mono uppercase text-zinc-500">Occlusion Type Selection</label>
+                            <select id="occ_type" name="occ_type" class="w-full bg-black border border-cyan-900 text-cyan-400 font-mono text-xs p-2 focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 outline-none">
+                                <option value="NO">NO_OCCLUSION (Normal)</option>
+                                <option value="CA">CA_OCCLUSION (Carrying Bag)</option>
+                                <option value="CO">CO_OCCLUSION (Crowd/Overlap)</option>
+                                <option value="ST">ST_OCCLUSION (Static Object)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full bg-cyan-400 text-black py-3 font-mono font-black text-xs tracking-[0.2em] uppercase hover:bg-fuchsia-500 hover:text-white transition-all transform active:scale-95 group relative overflow-hidden">
+                            <span class="relative z-10">INITIALIZE_RECOGNITION</span>
+                            <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
+                        </button>
+                    </form>
+                </section>
+            </div>
+
+            <!-- Right Side: Analysis & Results -->
+            <div class="flex flex-col gap-4">
+                <section class="bg-surface-container p-6 border border-fuchsia-900/20 min-h-[400px] flex flex-col">
+                    <h2 class="text-xs font-mono font-bold tracking-widest text-fuchsia-400 mb-4 border-b border-fuchsia-900/30 pb-2">
+                        THREAT_ANALYSIS_RANKING
+                    </h2>
+
+                    <div id="results-list" class="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Placeholder State -->
+                        <div class="flex flex-col items-center justify-center h-full opacity-20 pointer-events-none py-20">
+                            <span class="material-symbols-outlined text-6xl mb-4">search_off</span>
+                            <p class="font-mono text-[10px] tracking-widest">SCAN_RESULTS_EMPTY</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Nav (Aesthetic) -->
+    <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 px-4 bg-black/90 border-t border-cyan-950 z-50">
+        <div class="flex flex-col items-center justify-center text-cyan-400 border-t-2 border-cyan-400 pt-1">
+            <span class="material-symbols-outlined">psychology</span>
+            <span class="font-headline font-bold text-[10px] tracking-tighter uppercase">NEURAL</span>
+        </div>
+        <div class="flex flex-col items-center justify-center text-zinc-700 pt-1">
+            <span class="material-symbols-outlined">videocam</span>
+            <span class="font-headline font-bold text-[10px] tracking-tighter uppercase">FEEDS</span>
+        </div>
+        <div class="flex flex-col items-center justify-center text-zinc-700 pt-1">
+            <span class="material-symbols-outlined">query_stats</span>
+            <span class="font-headline font-bold text-[10px] tracking-tighter uppercase">TELEMETRY</span>
+        </div>
+    </nav>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

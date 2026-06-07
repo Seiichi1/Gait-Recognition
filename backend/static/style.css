@@ -1,0 +1,104 @@
+/* Custom Cyberpunk Styles */
+:root {
+    --primary: #00ffff;
+    --secondary: #ff00ff;
+    --tertiary: #ffff00;
+    --bg-dark: #000000;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Scanline Effect */
+.scanline-overlay {
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 255, 0.05) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    animation: scanline 10s linear infinite;
+}
+
+@keyframes scanline {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+}
+
+/* Bracket Corners */
+.bracket-corners {
+    position: relative;
+}
+
+.bracket-corners::before, .bracket-corners::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: rgba(0, 255, 255, 0.4);
+    pointer-events: none;
+}
+
+.bracket-corners::before { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
+.bracket-corners::after { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
+
+/* Image Rendering */
+.image-pixelated {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #050505;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #1a1a1a;
+    border-radius: 0;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* Animations */
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+.glitch-hover:hover {
+    animation: glitch 0.2s infinite;
+    text-shadow: 2px 0 var(--secondary), -2px 0 var(--primary);
+}
+
+/* Progress Bars */
+.neon-progress {
+    position: relative;
+    overflow: hidden;
+}
+
+.neon-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: progress-shimmer 2s infinite;
+}
+
+@keyframes progress-shimmer {
+    100% { left: 100%; }
+}

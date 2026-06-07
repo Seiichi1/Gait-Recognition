@@ -1,0 +1,1733 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Occlusion-Robust Human Gait Recognition Using Deep Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --secondary: #475569;
+            --accent: #0ea5e9;
+            --muted: #64748b;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .toc {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+        
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .bento-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .citation {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted var(--accent);
+        }
+        
+        .citation:hover {
+            background: rgba(14, 165, 233, 0.1);
+            border-bottom: 1px solid var(--accent);
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(14, 165, 233, 0.02) 100%);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .toc a {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--secondary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .toc a:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        
+        .toc .level-2 {
+            padding-left: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .toc .level-3 {
+            padding-left: 2rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        
+        .section-number {
+            color: var(--accent);
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        
+        /* Mermaid diagram styling */
+        .mermaid-container {
+            display: flex;
+            justify-content: center;
+            min-height: 300px;
+            max-height: 800px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mermaid-container .mermaid {
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+            cursor: grab;
+            transition: transform 0.3s ease;
+            transform-origin: center center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none; /* 防止触摸设备上的默认行为 */
+            -webkit-user-select: none; /* 防止文本选择 */
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .mermaid-container .mermaid svg {
+            max-width: 100%;
+            height: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .mermaid-container .mermaid:active {
+            cursor: grabbing;
+        }
+
+        .mermaid-container.zoomed .mermaid {
+            height: 100%;
+            width: 100%;
+            cursor: grab;
+        }
+
+        .mermaid-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mermaid-control-btn {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--primary);
+            font-size: 14px;
+            min-width: 36px;
+            height: 36px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mermaid-control-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .mermaid-control-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 1024px) {
+            .toc {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .toc.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mermaid-control-btn:not(.reset-zoom) {
+                display: none;
+            }
+            .mermaid-controls {
+                top: auto;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+        @media (max-width: 768px) {
+            .hero-grid h1 {
+                font-size: 2rem;
+            }
+            .hero-grid p.text-xl {
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .hero-grid h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+  <base target="_blank">
+</head>
+
+  <body>
+    <!-- Table of Contents -->
+    <nav class="toc">
+      <div class="mb-6">
+        <h2 class="serif text-xl font-bold text-slate-800 mb-4">Contents</h2>
+      </div>
+      <div class="space-y-1">
+        <a href="#introduction" class="level-1">
+          <span class="section-number">1.</span>Introduction
+        </a>
+        <a href="#core-research-focus" class="level-2">Core Research Focus</a>
+        <a href="#problem-statement" class="level-2">Problem Statement</a>
+        <a href="#novelty-angle" class="level-2">Novelty Angle</a>
+
+        <a href="#application-domains" class="level-1">
+          <span class="section-number">2.</span>Application Domains
+        </a>
+        <a href="#surveillance-systems" class="level-2">Intelligent Surveillance</a>
+        <a href="#healthcare-monitoring" class="level-2">Healthcare Monitoring</a>
+        <a href="#forensic-investigation" class="level-2">Forensic Investigation</a>
+
+        <a href="#datasets" class="level-1">
+          <span class="section-number">3.</span>Datasets
+        </a>
+        <a href="#occgait-dataset" class="level-2">OccGait Dataset</a>
+        <a href="#occcasia-b" class="level-2">OccCASIA-B</a>
+        <a href="#ntu-rgb-d" class="level-2">NTU RGB+D</a>
+
+        <a href="#image-processing" class="level-1">
+          <span class="section-number">4.</span>Image Processing Pipeline
+        </a>
+        <a href="#preprocessing" class="level-2">Preprocessing Stage</a>
+        <a href="#occlusion-handling" class="level-2">Occlusion Handling</a>
+        <a href="#feature-representation" class="level-2">Feature Representation</a>
+
+        <a href="#deep-learning-architecture" class="level-1">
+          <span class="section-number">5.</span>Deep Learning Architecture
+        </a>
+        <a href="#backbone-network" class="level-2">Backbone Network</a>
+        <a href="#occlusion-aware-mechanisms" class="level-2">Occlusion-Aware Mechanisms</a>
+        <a href="#training-strategies" class="level-2">Training Strategies</a>
+
+        <a href="#implementation" class="level-1">
+          <span class="section-number">6.</span>Implementation
+        </a>
+        <a href="#development-environment" class="level-2">Development Environment</a>
+        <a href="#system-integration" class="level-2">System Integration</a>
+
+        <a href="#experimental-analysis" class="level-1">
+          <span class="section-number">7.</span>Experimental Analysis
+        </a>
+        <a href="#evaluation-protocol" class="level-2">Evaluation Protocol</a>
+        <a href="#comparative-benchmarking" class="level-2">Comparative Benchmarking</a>
+
+        <a href="#research-paper" class="level-1">
+          <span class="section-number">8.</span>Research Paper Structure
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Section -->
+      <section class="bg-gradient-to-r from-slate-50 to-blue-50 py-16 px-8">
+        <div class="max-w-6xl mx-auto">
+          <div class="hero-grid">
+            <div>
+              <h1 class="serif text-5xl font-bold text-slate-800 mb-6 leading-tight">
+                <em>Occlusion-Robust Human Gait Recognition</em>
+                <br/>
+                Using Deep Learning
+              </h1>
+              <p class="text-xl text-slate-600 mb-8 leading-relaxed">
+                A comprehensive framework for addressing the critical performance degradation in gait recognition systems when subjects are partially occluded in real-world surveillance scenarios.
+              </p>
+              <div class="flex items-center space-x-6 text-sm text-slate-500">
+                <span><i class="fas fa-calendar mr-2"></i>Master&#39;s Project Framework</span>
+                <span><i class="fas fa-clock mr-2"></i>1.5 Months Timeline</span>
+                <span><i class="fas fa-code mr-2"></i>PyTorch/TensorFlow</span>
+              </div>
+            </div>
+            <div class="bento-card">
+              <img src="https://kimi-web-img.moonshot.cn/img/www.yumpu.com/66d182620d01b6b3111eca2467d946e6b8a14c14.jpg" alt="Abstract representation of gait recognition with occlusion" class="w-full h-48 object-cover rounded-lg mb-4" size="medium" aspect="wide" query="gait recognition occlusion abstract" referrerpolicy="no-referrer" data-modified="1" data-score="0.00"/>
+              <h3 class="font-semibold text-slate-800 mb-2">Project Overview</h3>
+              <p class="text-sm text-slate-600">
+                Addressing the 30-50% performance degradation gap between laboratory conditions and real-world surveillance scenarios through attention-based feature fusion.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Introduction Section -->
+      <section id="introduction" class="py-12 px-8">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="serif text-3xl font-bold text-slate-800 mb-8">
+            <span class="section-number">1.</span>Recommended Narrow Topic
+          </h2>
+
+          <div id="core-research-focus" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Core Research Focus</h3>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-slate-800 mb-3">Primary Title</h4>
+              <p class="text-lg font-medium text-slate-700">
+                &#34;Deep Learning-Based Gait Recognition Robust to Partial Occlusion in Surveillance Scenarios&#34;
+              </p>
+            </div>
+
+            <p class="mb-6">
+              The proposed research addresses <strong>one of the most persistent barriers to practical gait recognition deployment</strong>: the severe performance degradation that occurs when subjects are partially occluded by environmental obstacles, other pedestrians, or scene elements. While laboratory-validated systems routinely achieve <strong>&gt;95% Rank-1 accuracy</strong> on clean benchmarks like CASIA-B, operational performance in crowded public spaces often collapses to <strong>&lt;60%</strong> due to occlusion effects <a href="https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/01016.pdf" class="citation">[237]</a>.
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">
+                  <i class="fas fa-brain text-blue-500 mr-2"></i>Deep Learning
+                </h4>
+                <p class="text-sm text-slate-600">Advanced attention mechanisms and spatial-temporal feature fusion for robust recognition.</p>
+              </div>
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">
+                  <i class="fas fa-eye-slash text-orange-500 mr-2"></i>Occlusion Robustness
+                </h4>
+                <p class="text-sm text-slate-600">Explicit handling of partial visibility through learned occlusion detection and compensation.</p>
+              </div>
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">
+                  <i class="fas fa-video text-green-500 mr-2"></i>Surveillance Focus
+                </h4>
+                <p class="text-sm text-slate-600">Real-world deployment scenarios where occlusion is pervasive rather than exceptional.</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="problem-statement" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Problem Statement</h3>
+
+            <p class="mb-6">
+              The core technical problem decomposes into three interconnected challenges that must be solved in concert:
+            </p>
+
+            <div class="overflow-x-auto mb-6">
+              <table class="w-full border-collapse border border-slate-300">
+                <thead>
+                  <tr class="bg-slate-50">
+                    <th class="border border-slate-300 p-3 text-left font-semibold">Challenge</th>
+                    <th class="border border-slate-300 p-3 text-left font-semibold">Description</th>
+                    <th class="border border-slate-300 p-3 text-left font-semibold">Consequence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border border-slate-300 p-3 font-medium">Occlusion Detection</td>
+                    <td class="border border-slate-300 p-3">Accurately identifying which body regions are visible vs. occluded</td>
+                    <td class="border border-slate-300 p-3">Misclassification corrupts recognition decisions</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-slate-300 p-3 font-medium">Feature Extraction</td>
+                    <td class="border border-slate-300 p-3">Learning representations that emphasize reliable visible regions</td>
+                    <td class="border border-slate-300 p-3">Network wastes capacity processing noise</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-slate-300 p-3 font-medium">Temporal Fusion</td>
+                    <td class="border border-slate-300 p-3">Aggregating information across frames with varying occlusion</td>
+                    <td class="border border-slate-300 p-3">Static fusion allows occluded frames to contaminate representations</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="mb-6">
+              Quantitative evidence from recent benchmarks substantiates the severity of this problem. On <strong>OccCASIA-B</strong>, state-of-the-art methods like <strong>GaitPart experience 15-30 percentage point accuracy drops</strong> under moderate occlusion, with severe occlusion causing <strong>&gt;50% degradation</strong>
+              <a href="https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/01016.pdf" class="citation">[237]</a>.
+            </p>
+          </div>
+
+          <div id="novelty-angle" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Novelty Angle</h3>
+
+            <p class="mb-6">
+              The proposed novelty centers on <strong>systematic integration of three architectural innovations</strong>:
+            </p>
+
+            <div class="space-y-6 mb-8">
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">
+                  <span class="text-blue-500 mr-2">1.</span>Learnable Occlusion Detection
+                </h4>
+                <p class="text-sm text-slate-600">Automatic identification and localization of occluded regions without explicit pixel-level supervision, trained through end-to-end backpropagation from recognition objectives.</p>
+              </div>
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">
+                  <span class="text-green-500 mr-2">2.</span>Hierarchical Attention Mechanisms
+                </h4>
+                <p class="text-sm text-slate-600">Multi-granularity attention operating at frame-level spatial attention, part-level discriminative importance weighting, and temporal attention for informative gait phases.</p>
+              </div>
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">
+                  <span class="text-purple-500 mr-2">3.</span>Occlusion-Conditioned Fusion
+                </h4>
+                <p class="text-sm text-slate-600">Information propagation across frames based on estimated reliability, exploiting gait periodicity to compensate for missing information rather than discarding occluded frames.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Application Domains Section -->
+      <section id="application-domains" class="py-12 px-8 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="serif text-3xl font-bold text-slate-800 mb-8">
+            <span class="section-number">2.</span>Application Domain Analysis
+          </h2>
+
+          <div id="surveillance-systems" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Primary Domain: Intelligent Surveillance Systems</h3>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Scenario: Long-Distance Person Re-Identification</h4>
+                <p class="mb-4">
+                  Large-scale public space monitoring where traditional biometric modalities face fundamental limitations. Gait offers unique advantages: operates at distance without subject awareness, functions with low-resolution imagery, and maintains effectiveness despite clothing changes.
+                </p>
+
+                <div class="overflow-x-auto">
+                  <table class="w-full border-collapse border border-slate-300 text-sm">
+                    <thead>
+                      <tr class="bg-slate-100">
+                        <th class="border border-slate-300 p-2 text-left">Modality</th>
+                        <th class="border border-slate-300 p-2 text-left">Range</th>
+                        <th class="border border-slate-300 p-2 text-left">Cooperation</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="border border-slate-300 p-2">Face Recognition</td>
+                        <td class="border border-slate-300 p-2">&lt;10 meters</td>
+                        <td class="border border-slate-300 p-2">Required</td>
+                      </tr>
+                      <tr>
+                        <td class="border border-slate-300 p-2">Fingerprint/Iris</td>
+                        <td class="border border-slate-300 p-2">Contact</td>
+                        <td class="border border-slate-300 p-2">Active</td>
+                      </tr>
+                      <tr>
+                        <td class="border border-slate-300 p-2 font-medium text-blue-600">Gait Recognition</td>
+                        <td class="border border-slate-300 p-2 font-medium">50-200 meters</td>
+                        <td class="border border-slate-300 p-2 font-medium">None</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div>
+                <img src="https://kimi-web-img.moonshot.cn/img/media.istockphoto.com/ab19fa60fc80ee6d01d9b3aa299a75ee0ed69e13.jpg" alt="Surveillance camera monitoring crowded public space" class="w-full h-64 object-cover rounded-lg" size="medium" aspect="wide" style="photo" query="surveillance camera crowded public area" referrerpolicy="no-referrer" data-modified="1" data-score="0.00"/>
+              </div>
+            </div>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-slate-800 mb-3">Impact: Enhanced Security Effectiveness</h4>
+              <p class="mb-3">
+                The non-cooperative nature is particularly valuable for identifying individuals actively avoiding detection — unlike face recognition where simple avoidance is effective, gait requires no subject awareness and is difficult to deliberately alter without conspicuous behavior change.
+              </p>
+            </div>
+          </div>
+
+          <div id="healthcare-monitoring" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Secondary Domain: Healthcare Monitoring</h3>
+
+            <p class="mb-6">
+              Beyond security, occlusion-robust gait analysis enables healthcare monitoring in domestic environments where furniture and architectural elements routinely obstruct camera views. In-home fall risk assessment systems must operate with fixed camera placements that create persistent blind spots.
+            </p>
+
+            <div class="bento-card mb-6">
+              <h4 class="font-semibold text-slate-800 mb-3">Key Healthcare Requirements</h4>
+              <ul class="space-y-2 text-sm text-slate-600">
+                <li><strong>Longitudinal consistency:</strong> Tracking the same individual over months</li>
+                <li><strong>Sensitivity to subtle changes:</strong> Early indicators of functional decline</li>
+                <li><strong>Tolerance for failures:</strong> Resolvable through human review</li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="forensic-investigation" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Forensic Investigation Applications</h3>
+
+            <p class="mb-6">
+              Forensic applications present unique requirements that motivate specific technical extensions. Criminal incident footage is frequently degraded: bystander mobile devices, distant cameras, low-quality surveillance systems, with severe, uncontrolled occlusion from scene elements.
+            </p>
+
+            <div class="bento-card">
+              <h4 class="font-semibold text-slate-800 mb-3">Legal Admissibility Requirements</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                Stringent validation needs: established error rates, explicit uncertainty quantification, and comprehensive audit trails. The proposed evaluation framework directly supports these requirements.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Datasets Section -->
+      <section id="datasets" class="py-12 px-8">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="serif text-3xl font-bold text-slate-800 mb-8">
+            <span class="section-number">3.</span>Publicly Available Datasets
+          </h2>
+
+          <div id="occgait-dataset" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Primary Dataset: OccGait</h3>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">Source</h4>
+                <p class="text-sm text-slate-600">Beijing Normal University - Intelligent Vision Computing Lab (BNU-IVC)</p>
+                <a href="https://github.com/BNU-IVC/OccGait" class="citation text-xs">Access: GitHub Repository</a>
+              </div>
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">Scale</h4>
+                <ul class="text-sm text-slate-600 space-y-1">
+                  <li>101 subjects</li>
+                  <li>80,000+ sequences</li>
+                  <li>8 camera viewpoints</li>
+                </ul>
+              </div>
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">Occlusion Categories</h4>
+                <ul class="text-sm text-slate-600 space-y-1">
+                  <li>Non-Occlusion (NO)</li>
+                  <li>Carrying Occlusion (CA)</li>
+                  <li>Crowd Occlusion (CO)</li>
+                  <li>Static Occlusion (ST)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-slate-800 mb-3">Strategic Significance</h4>
+              <p class="mb-3">
+                The 2024 release date provides a window of opportunity for establishing benchmark results before saturation. The dataset&#39;s derivation from CASIA-B ensures meaningful comparison with extensive prior literature.
+              </p>
+            </div>
+          </div>
+
+          <div id="occcasia-b" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Alternative Dataset: OccCASIA-B</h3>
+
+            <p class="mb-6">
+              Extends the most widely used gait recognition benchmark, providing continuity with extensive prior literature and cross-dataset validation opportunity.
+            </p>
+
+            <div class="overflow-x-auto mb-6">
+              <table class="w-full border-collapse border border-slate-300">
+                <thead>
+                  <tr class="bg-slate-50">
+                    <th class="border border-slate-300 p-3 text-left font-semibold">Attribute</th>
+                    <th class="border border-slate-300 p-3 text-left font-semibold">Specification</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border border-slate-300 p-3 font-medium">Subjects</td>
+                    <td class="border border-slate-300 p-3">124 (93 male, 31 female)</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-slate-300 p-3 font-medium">Views</td>
+                    <td class="border border-slate-300 p-3">11 angles (0°-180°, 18° increments)</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-slate-300 p-3 font-medium">Conditions</td>
+                    <td class="border border-slate-300 p-3">Normal (NM), Bag-carrying (BG), Coat-wearing (CL)</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-slate-300 p-3 font-medium">Total Sequences</td>
+                    <td class="border border-slate-300 p-3">~13,640</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="text-sm text-slate-600">
+              Access: <a href="http://www.cbsr.ia.ac.cn/iCPR/gait/Gait%20Databases.html" class="citation">Center for Biometrics and Security Research (CBSR)</a>
+            </p>
+          </div>
+
+          <div id="ntu-rgb-d" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Supplementary Dataset: NTU RGB+D</h3>
+
+            <p class="mb-6">
+              While designed for general action recognition, provides valuable complementary resources for gait-specific research through 3D skeletal data.
+            </p>
+
+            <div class="bento-card">
+              <h4 class="font-semibold text-slate-800 mb-3">Skeleton-Based Gait Feature Extraction</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                The explicit structure provides strong priors for occlusion recovery: even with substantial joint occlusion, visible limb segments constrain plausible configurations of missing joints through anatomical connectivity.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Image Processing Section -->
+      <section id="image-processing" class="py-12 px-8 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="serif text-3xl font-bold text-slate-800 mb-8">
+            <span class="section-number">4.</span>Image Processing Pipeline
+          </h2>
+
+          <div id="preprocessing" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Preprocessing Stage</h3>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Background Subtraction</h4>
+                <p class="mb-4">
+                  Gaussian Mixture Models (GMM) provide statistically principled background subtraction, representing each pixel&#39;s color distribution as a mixture of Gaussian components.
+                </p>
+
+                <div class="bento-card">
+                  <h5 class="font-medium text-slate-800 mb-2">GMM Parameters</h5>
+                  <ul class="text-sm text-slate-600 space-y-1">
+                    <li><strong>Components per pixel:</strong> 3-5</li>
+                    <li><strong>Learning rate:</strong> 0.005-0.01</li>
+                    <li><strong>Shadow detection:</strong> Enabled</li>
+                    <li><strong>Post-processing:</strong> Opening (3×3) → Closing (5×5)</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Temporal Alignment</h4>
+                <p class="mb-4">
+                  Gait cycle detection enables phase-normalized analysis through autocorrelation of silhouette width, lower-body motion analysis, or frequency domain analysis.
+                </p>
+
+                <div class="bento-card">
+                  <h5 class="font-medium text-slate-800 mb-2">Cycle Detection Methods</h5>
+                  <ul class="text-sm text-slate-600 space-y-1">
+                    <li><strong>Autocorrelation:</strong> Peak detection in width time series</li>
+                    <li><strong>Lower-body analysis:</strong> Foot position tracking</li>
+                    <li><strong>Frequency analysis:</strong> FFT of principal components</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="occlusion-handling" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Occlusion Handling Techniques</h3>
+
+            <div class="space-y-6">
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">
+                  <i class="fas fa-search text-blue-500 mr-2"></i>Occlusion Region Detection
+                </h4>
+                <p class="text-sm text-slate-600 mb-3">
+                  Frame differencing, edge continuity analysis, and optical flow-based motion inconsistency detection identify occluded regions through anomalous patterns.
+                </p>
+              </div>
+
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">
+                  <i class="fas fa-paint-brush text-green-500 mr-2"></i>Inpainting and Reconstruction
+                </h4>
+                <p class="text-sm text-slate-600 mb-3">
+                  Partial convolution-based completion, generative adversarial networks, and skeleton-guided structural reconstruction handle missing regions through anatomically constrained synthesis.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div id="feature-representation" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Feature Representation Generation</h3>
+
+            <div class="grid md:grid-cols-3 gap-6">
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">Gait Energy Image (GEI)</h4>
+                <div class="text-xs text-slate-500 mb-2">
+                  $$\text{GEI}(x,y) = \frac{1}{T}\sum_{t=1}^{T} S_t(x,y)$$
+                </div>
+                <p class="text-sm text-slate-600">
+                  Aggregates silhouettes across gait cycle, suppressing noise and emphasizing consistent shape patterns.
+                </p>
+              </div>
+
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">Gait Entropy Image (GEnI)</h4>
+                <div class="text-xs text-slate-500 mb-2">
+                  $$\text{GEnI}(x,y) = -\sum_{b} p_b(x,y) \log p_b(x,y)$$
+                </div>
+                <p class="text-sm text-slate-600">
+                  Encodes temporal variation, highlighting dynamic regions like legs and arms with high entropy.
+                </p>
+              </div>
+
+              <div class="bento-card">
+                <h4 class="font-semibold text-slate-800 mb-3">Frame-Level Sequences</h4>
+                <p class="text-sm text-slate-600">
+                  Preserves complete temporal dynamics for deep sequence models (ConvLSTM, TCN, Transformers) with dynamic reliability weighting.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Deep Learning Architecture Section -->
+      <section id="deep-learning-architecture" class="py-12 px-8">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="serif text-3xl font-bold text-slate-800 mb-8">
+            <span class="section-number">5.</span>Deep Learning Architecture
+          </h2>
+
+          <div id="backbone-network" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Backbone Network Design</h3>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Spatial Feature Extraction</h4>
+                <p class="mb-4">
+                  ResNet-50 or EfficientNet-B0 provide proven silhouette encoding capabilities, with pretrained ImageNet weights offering useful initialization despite domain differences.
+                </p>
+
+                <div class="bento-card mb-4">
+                  <h5 class="font-medium text-slate-800 mb-2">Spatial Attention Modules</h5>
+                  <ul class="text-sm text-slate-600 space-y-1">
+                    <li><strong>SE Blocks:</strong> Channel attention with ~10% parameter overhead</li>
+                    <li><strong>CBAM:</strong> Sequential channel + spatial attention</li>
+                    <li><strong>Custom occlusion-attention:</strong> Learned visibility estimation</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Temporal Modeling</h4>
+                <p class="mb-4">
+                  Multiple approaches for sequence dynamics: ConvLSTM for recurrent spatial-preserving modeling, TCN for parallelizable processing, and Transformers for long-range dependency capture.
+                </p>
+
+                <div class="bento-card">
+                  <h5 class="font-medium text-slate-800 mb-2">Temporal Architecture Choices</h5>
+                  <ul class="text-sm text-slate-600 space-y-1">
+                    <li><strong>ConvLSTM:</strong> Recurrent with gating mechanisms</li>
+                    <li><strong>TCN:</strong> Dilated convolutions, stable gradients</li>
+                    <li><strong>Transformer:</strong> Self-attention, global relationships</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="occlusion-aware-mechanisms" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Occlusion-Aware Mechanisms</h3>
+
+            <div class="space-y-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Attention-Based Feature Weighting</h4>
+                <div class="grid md:grid-cols-3 gap-4">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Learnable Occlusion Masks</h5>
+                    <p class="text-sm text-slate-600">End-to-end occlusion estimation with soft masking for gradient preservation</p>
+                  </div>
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Part Visibility Scoring</h5>
+                    <p class="text-sm text-slate-600">Explicit reliability estimation with temporal consistency enforcement</p>
+                  </div>
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Masked Self-Attention</h5>
+                    <p class="text-sm text-slate-600">Occlusion-aware attention computation with multiple attention heads</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Multi-Scale Feature Fusion</h4>
+                <div class="grid md:grid-cols-3 gap-4">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Pyramid Pooling</h5>
+                    <p class="text-sm text-slate-600">Global to local feature aggregation for scale-invariant representation</p>
+                  </div>
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Cross-Scale Aggregation</h5>
+                    <p class="text-sm text-slate-600">Information flow between scales with FPN architecture</p>
+                  </div>
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Late Fusion</h5>
+                    <p class="text-sm text-slate-600">Combining appearance and motion cues with learned reliability weighting</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="training-strategies" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Training Strategies</h3>
+
+            <div class="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Loss Function Design</h4>
+                <div class="space-y-4">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Triplet Loss with Hard Negative Mining</h5>
+                    <div class="text-xs text-slate-500 mb-2">
+                      $$\mathcal{L}_{\text{triplet}} = \sum_{i}^{N} \left[ \|f(x_i^a) - f(x_i^p)\|_2^2 - \|f(x_i^a) - f(x_i^n)\|_2^2 + \alpha \right]_+$$
+                    </div>
+                    <p class="text-sm text-slate-600">Focuses training on informative, difficult cases for fine-grained discrimination</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Center Loss for Intra-Class Compactness</h5>
+                    <div class="text-xs text-slate-500 mb-2">
+                      $$\mathcal{L}_{\text{center}} = \frac{1}{2}\sum_{i=1}^{m}\|f(x_i) - c_{y_i}\|_2^2$$
+                    </div>
+                    <p class="text-sm text-slate-600">Combined with triplet loss for inter-class separation + intra-class compactness</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Occlusion-Aware Consistency</h5>
+                    <div class="text-xs text-slate-500 mb-2">
+                      $$\mathcal{L}_{\text{consistency}} = \sum_{i} \|f(x_i^{\text{clean}}) - f(x_i^{\text{occluded}})\|_2^2$$
+                    </div>
+                    <p class="text-sm text-slate-600">Enforces embedding similarity across different occlusion patterns of same subject</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Data Augmentation</h4>
+                <div class="space-y-4">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Random Synthetic Occlusion</h5>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                      <li><strong>Probability:</strong> 0.3-0.7 per sequence</li>
+                      <li><strong>Position:</strong> Random or part-biased</li>
+                      <li><strong>Size:</strong> 10%-50% of silhouette area</li>
+                      <li><strong>Shape:</strong> Rectangle, ellipse, free-form</li>
+                    </ul>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">View-Angle Simulation</h5>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                      <li><strong>Rotation:</strong> ±15°</li>
+                      <li><strong>Scaling:</strong> 0.9-1.1</li>
+                      <li><strong>Shear:</strong> ±0.1</li>
+                      <li><strong>Translation:</strong> ±5% image size</li>
+                    </ul>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Temporal Resampling</h5>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                      <li><strong>Frame dropping:</strong> Random skip 1-2 frames</li>
+                      <li><strong>Frame duplication:</strong> Random repeat 1-2 frames</li>
+                      <li><strong>Interpolation:</strong> Subsample to target length</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Implementation Section -->
+      <section id="implementation" class="py-12 px-8 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="serif text-3xl font-bold text-slate-800 mb-8">
+            <span class="section-number">6.</span>Implementation Framework
+          </h2>
+
+          <div id="development-environment" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Development Environment</h3>
+
+            <div class="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Core Libraries</h4>
+                <div class="space-y-3">
+                  <div class="bento-card">
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <h5 class="font-medium text-slate-800">PyTorch 2.0+</h5>
+                        <p class="text-sm text-slate-600">Primary deep learning framework</p>
+                      </div>
+                      <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">Recommended</span>
+                    </div>
+                  </div>
+
+                  <div class="bento-card">
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <h5 class="font-medium text-slate-800">TensorFlow 2.12+</h5>
+                        <p class="text-sm text-slate-600">Alternative with deployment tools</p>
+                      </div>
+                      <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Alternative</span>
+                    </div>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Image Processing</h5>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                      <li>OpenCV ≥4.7.0 (GPU acceleration)</li>
+                      <li>Albumentations ≥1.3.0 (efficient transforms)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Specialized Tools</h4>
+                <div class="space-y-3">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Pose Estimation</h5>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                      <li>MMDetection/Detectron2</li>
+                      <li>Skeleton-guided occlusion recovery</li>
+                    </ul>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Experiment Tracking</h5>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                      <li>Weights &amp; Biases (recommended)</li>
+                      <li>TensorBoard (lightweight alternative)</li>
+                    </ul>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Deployment</h5>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                      <li>ONNX Runtime (cross-platform)</li>
+                      <li>Docker (environment consistency)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="system-integration" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">System Integration</h3>
+
+            <div class="mb-8">
+              <div class="mermaid-container">
+                <div class="mermaid-controls">
+                  <button class="mermaid-control-btn zoom-in" title="放大">
+                    <i class="fas fa-search-plus"></i>
+                  </button>
+                  <button class="mermaid-control-btn zoom-out" title="缩小">
+                    <i class="fas fa-search-minus"></i>
+                  </button>
+                  <button class="mermaid-control-btn reset-zoom" title="重置">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                  </button>
+                  <button class="mermaid-control-btn fullscreen" title="全屏查看">
+                    <i class="fas fa-expand"></i>
+                  </button>
+                </div>
+                <div class="mermaid">
+                  graph TD
+                  A[&#34;Data Ingestion&#34;] --&gt; B[&#34;Preprocessing&#34;]
+                  B --&gt; C[&#34;Occlusion Detection&#34;]
+                  C --&gt; D[&#34;Feature Extraction&#34;]
+                  D --&gt; E[&#34;Temporal Modeling&#34;]
+                  E --&gt; F[&#34;Occlusion-Aware Fusion&#34;]
+                  F --&gt; G[&#34;Classification&#34;]
+                  G --&gt; H[&#34;Evaluation &amp; Reporting&#34;]
+
+                  A1[&#34;Dataset Loaders&#34;] --&gt; A
+                  A2[&#34;Augmentation&#34;] --&gt; A
+                  A3[&#34;Batching&#34;] --&gt; A
+
+                  B1[&#34;Background Subtraction&#34;] --&gt; B
+                  B2[&#34;Normalization&#34;] --&gt; B
+                  B3[&#34;Temporal Alignment&#34;] --&gt; B
+
+                  C1[&#34;Frame Differencing&#34;] --&gt; C
+                  C2[&#34;Edge Analysis&#34;] --&gt; C
+                  C3[&#34;Optical Flow&#34;] --&gt; C
+
+                  D1[&#34;ResNet-50/EfficientNet&#34;] --&gt; D
+                  D2[&#34;Attention Modules&#34;] --&gt; D
+                  D3[&#34;Part-Based Learning&#34;] --&gt; D
+
+                  E1[&#34;ConvLSTM&#34;] --&gt; E
+                  E2[&#34;TCN&#34;] --&gt; E
+                  E3[&#34;Transformer&#34;] --&gt; E
+
+                  F1[&#34;Feature Masking&#34;] --&gt; F
+                  F2[&#34;Multi-Scale Fusion&#34;] --&gt; F
+                  F3[&#34;Reliability Weighting&#34;] --&gt; F
+                </div>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Modular Pipeline Architecture</h4>
+                <div class="space-y-4">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Data Ingestion</h5>
+                    <p class="text-sm text-slate-600">Dataset loaders, augmentation, batching with occlusion masks and metadata</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Model Training</h5>
+                    <p class="text-sm text-slate-600">Network forward/backward, optimization, checkpointing with performance tracking</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Inference &amp; Evaluation</h5>
+                    <p class="text-sm text-slate-600">Model application, metric computation, result aggregation with timing benchmarks</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Reproducibility Framework</h4>
+                <div class="space-y-4">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Configuration Management</h5>
+                    <p class="text-sm text-slate-600">YAML/JSON files for precise experiment specification and version control</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Version Control</h5>
+                    <p class="text-sm text-slate-600">Git + DVC for code evolution tracking and large file versioning</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Containerization</h5>
+                    <p class="text-sm text-slate-600">Docker for environment consistency and deployment portability</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Experimental Analysis Section -->
+      <section id="experimental-analysis" class="py-12 px-8">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="serif text-3xl font-bold text-slate-800 mb-8">
+            <span class="section-number">7.</span>Experimental Analysis Plan
+          </h2>
+
+          <div id="evaluation-protocol" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Evaluation Protocol</h3>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Standard Metrics</h4>
+                <div class="space-y-3">
+                  <div class="bento-card">
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <h5 class="font-medium text-slate-800">Rank-1 Accuracy</h5>
+                        <p class="text-sm text-slate-600">% probes with correct identity at top-1</p>
+                      </div>
+                      <span class="text-xs text-green-600 font-medium">Target: &gt;85%</span>
+                    </div>
+                  </div>
+
+                  <div class="bento-card">
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <h5 class="font-medium text-slate-800">Rank-5 Accuracy</h5>
+                        <p class="text-sm text-slate-600">% probes with correct identity in top-5</p>
+                      </div>
+                      <span class="text-xs text-green-600 font-medium">Target: &gt;95%</span>
+                    </div>
+                  </div>
+
+                  <div class="bento-card">
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <h5 class="font-medium text-slate-800">CMC Curve AUC</h5>
+                        <p class="text-sm text-slate-600">Cumulative match characteristic</p>
+                      </div>
+                      <span class="text-xs text-green-600 font-medium">Target: &gt;0.90</span>
+                    </div>
+                  </div>
+
+                  <div class="bento-card">
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <h5 class="font-medium text-slate-800">Mean Average Precision</h5>
+                        <p class="text-sm text-slate-600">Multi-gallery evaluation</p>
+                      </div>
+                      <span class="text-xs text-green-600 font-medium">Target: &gt;80%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Occlusion-Specific Analysis</h4>
+                <div class="space-y-3">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Degradation Curves</h5>
+                    <p class="text-sm text-slate-600">Accuracy vs. occlusion severity (size, duration) for operational thresholds</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Part Contribution Analysis</h5>
+                    <p class="text-sm text-slate-600">Ablate individual parts; measure accuracy drop for critical region identification</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Cross-Type Generalization</h5>
+                    <p class="text-sm text-slate-600">Train on CO, test on SO; vice versa for transferability assessment</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="comparative-benchmarking" class="mb-12">
+            <h3 class="serif text-2xl font-semibold text-slate-800 mb-6">Comparative Benchmarking</h3>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Baseline Methods</h4>
+                <div class="overflow-x-auto">
+                  <table class="w-full border-collapse border border-slate-300">
+                    <thead>
+                      <tr class="bg-slate-50">
+                        <th class="border border-slate-300 p-3 text-left font-semibold">Method</th>
+                        <th class="border border-slate-300 p-3 text-left font-semibold">Expected</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="border border-slate-300 p-3">GEI + SVM</td>
+                        <td class="border border-slate-300 p-3">~60% Rank-1</td>
+                      </tr>
+                      <tr>
+                        <td class="border border-slate-300 p-3">CNN-LSTM</td>
+                        <td class="border border-slate-300 p-3">~70% Rank-1</td>
+                      </tr>
+                      <tr>
+                        <td class="border border-slate-300 p-3">GaitSet/GaitPart</td>
+                        <td class="border border-slate-300 p-3">~75% Rank-1</td>
+                      </tr>
+                      <tr>
+                        <td class="border border-slate-300 p-3">GaitMoE</td>
+                        <td class="border border-slate-300 p-3">~80% Rank-1</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-slate-800 mb-4">Ablation Studies</h4>
+                <div class="space-y-3">
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Attention Mechanism</h5>
+                    <p class="text-sm text-slate-600">Remove attention; replace with uniform weighting to validate contribution</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Temporal Fusion</h5>
+                    <p class="text-sm text-slate-600">Single-frame processing only to quantify temporal information value</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Occlusion Detection</h5>
+                    <p class="text-sm text-slate-600">Ground-truth masks vs. learned to estimate detection error impact</p>
+                  </div>
+
+                  <div class="bento-card">
+                    <h5 class="font-medium text-slate-800 mb-2">Part-Based Processing</h5>
+                    <p class="text-sm text-slate-600">Holistic features only to validate part decomposition benefit</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-slate-800 mb-3">Statistical Validation</h4>
+              <div class="grid md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <strong>Cross-validation:</strong> Subject-independent splits with view-stratified sampling for unbiased generalization estimates
+                </div>
+                <div>
+                  <strong>Significance Testing:</strong> Paired t-test across multiple runs with p &lt; 0.05 threshold for claimed improvements
+                </div>
+                <div>
+                  <strong>Uncertainty Quantification:</strong> Bootstrap confidence intervals with 95% CI for reported metrics
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Research Paper Structure Section -->
+      <section id="research-paper" class="py-12 px-8 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="serif text-3xl font-bold text-slate-800 mb-8">
+            <span class="section-number">8.</span>Research Paper Structure
+          </h2>
+
+          <div class="grid md:grid-cols-3 gap-8 mb-12">
+            <div>
+              <h3 class="serif text-xl font-semibold text-slate-800 mb-4">Core Contributions</h3>
+              <div class="space-y-4">
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Architectural Innovation</h4>
+                  <p class="text-sm text-slate-600">Attention-fusion integration for occlusion-aware gait recognition with ablation studies and GaitMoE comparison</p>
+                </div>
+
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Evaluation Framework</h4>
+                  <p class="text-sm text-slate-600">Systematic analysis across occlusion types, severity levels, and cross-dataset validation</p>
+                </div>
+
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Open-Source Implementation</h4>
+                  <p class="text-sm text-slate-600">Public code release with reproducible benchmarks and comprehensive documentation</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="serif text-xl font-semibold text-slate-800 mb-4">Anticipated Results</h3>
+              <div class="space-y-4">
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Quantitative</h4>
+                  <p class="text-sm text-slate-600">&gt;10% Rank-1 improvement over GaitPart on OccGait CO, demonstrating occlusion handling effectiveness</p>
+                </div>
+
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Qualitative</h4>
+                  <p class="text-sm text-slate-600">Attention visualizations showing robust focus on visible parts with interpretable failure modes</p>
+                </div>
+
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Practical</h4>
+                  <p class="text-sm text-slate-600">Inference timing &lt;100ms per sequence on standard GPU, ensuring deployment feasibility</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="serif text-xl font-semibold text-slate-800 mb-4">Publication Targets</h3>
+              <div class="space-y-4">
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Top-tier Conferences</h4>
+                  <p class="text-sm text-slate-600">CVPR, ICCV, ECCV workshops with emphasis on practical impact and real-world problem solving</p>
+                </div>
+
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Specialized Journals</h4>
+                  <p class="text-sm text-slate-600">IEEE T-BIOM, Pattern Recognition with full methodological detail and extensive evaluation</p>
+                </div>
+
+                <div class="bento-card">
+                  <h4 class="font-medium text-slate-800 mb-2">Application Venues</h4>
+                  <p class="text-sm text-slate-600">IEEE T-CSVT, Neurocomputing with surveillance deployment focus and efficiency emphasis</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bento-card">
+            <h3 class="serif text-xl font-semibold text-slate-800 mb-4">Timeline &amp; Milestones</h3>
+            <div class="space-y-4">
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">1</div>
+                <div>
+                  <h4 class="font-medium text-slate-800">Week 1: Foundation</h4>
+                  <p class="text-sm text-slate-600">Environment setup, dataset acquisition, baseline reproduction</p>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">2</div>
+                <div>
+                  <h4 class="font-medium text-slate-800">Week 2: Core Architecture</h4>
+                  <p class="text-sm text-slate-600">Spatial backbone implementation with attention mechanisms</p>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">3-4</div>
+                <div>
+                  <h4 class="font-medium text-slate-800">Weeks 3-4: Advanced Features</h4>
+                  <p class="text-sm text-slate-600">Temporal fusion, occlusion-aware training, hyperparameter optimization</p>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">5</div>
+                <div>
+                  <h4 class="font-medium text-slate-800">Week 5: Evaluation</h4>
+                  <p class="text-sm text-slate-600">Comprehensive testing, ablation studies, failure analysis</p>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">6</div>
+                <div>
+                  <h4 class="font-medium text-slate-800">Week 6: Documentation</h4>
+                  <p class="text-sm text-slate-600">Paper drafting, code documentation, reproducibility packaging</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer with Citations -->
+      <footer class="py-8 px-8 border-t border-slate-200">
+        <div class="max-w-6xl mx-auto">
+          <h3 class="serif text-lg font-semibold text-slate-800 mb-4">References</h3>
+          <div class="grid md:grid-cols-2 gap-4 text-sm text-slate-600">
+            <div>
+              <p class="mb-2">
+                <a href="https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/01016.pdf" class="citation">[237]</a> GaitMoE: Mixture of Experts for Gait Recognition with Dynamic Occlusions (ECCV 2024)
+              </p>
+              <p class="mb-2">
+                <a href="https://www.sciencedirect.com/science/article/abs/pii/S0957417424000460" class="citation">[254]</a> BGaitR-Net: A Bidirectional Generative Adversarial Network for Gait Recognition (Expert Systems with Applications)
+              </p>
+            </div>
+            <div>
+              <p class="mb-2">
+                <a href="https://www.mdpi.com/1424-8220/23/10/4875" class="citation">[277]</a> A Survey on Occlusion in Gait Recognition (Sensors 2023)
+              </p>
+              <p class="mb-2">
+                <a href="https://www.mdpi.com/1424-8220/26/4/1352" class="citation">[289]</a> Gait Recognition in Home Environments: Challenges and Solutions (Sensors 2026)
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+        // Initialize Mermaid with custom configuration
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                // Primary nodes (start/end points)
+                primaryColor: '#ffffff',
+                primaryTextColor: '#1e293b',
+                primaryBorderColor: '#0ea5e9',
+                
+                // Secondary nodes (processing steps)
+                secondaryColor: '#f8fafc',
+                secondaryTextColor: '#1e293b',
+                secondaryBorderColor: '#64748b',
+                
+                // Tertiary nodes (decision points)
+                tertiaryColor: '#e2e8f0',
+                tertiaryTextColor: '#1e293b',
+                tertiaryBorderColor: '#475569',
+                
+                // Lines and connections
+                lineColor: '#64748b',
+                edgeLabelBackground: '#ffffff',
+                
+                // Background and general styling
+                background: '#ffffff',
+                mainBkg: '#ffffff',
+                secondBkg: '#f8fafc',
+                tertiaryBkg: '#e2e8f0',
+                
+                // Text styling
+                textColor: '#1e293b',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '13px',
+                fontWeight: '500',
+                
+                // Node-specific colors for better contrast
+                cScale0: '#ffffff',
+                cScale1: '#f8fafc',
+                cScale2: '#e2e8f0',
+                cScale3: '#cbd5e1',
+                cScale4: '#94a3b8',
+                
+                // Ensure good contrast for all text
+                darkTextColor: '#1e293b',
+                lightTextColor: '#1e293b'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 20
+            },
+            fontFamily: 'Inter, sans-serif',
+            fontSize: 13,
+            fontWeight: 500
+        });
+
+        // Initialize Mermaid Controls for zoom and pan
+        function initializeMermaidControls() {
+            const containers = document.querySelectorAll('.mermaid-container');
+
+            containers.forEach(container => {
+            const mermaidElement = container.querySelector('.mermaid');
+            let scale = 1;
+            let isDragging = false;
+            let startX, startY, translateX = 0, translateY = 0;
+
+            // 触摸相关状态
+            let isTouch = false;
+            let touchStartTime = 0;
+            let initialDistance = 0;
+            let initialScale = 1;
+            let isPinching = false;
+
+            // Zoom controls
+            const zoomInBtn = container.querySelector('.zoom-in');
+            const zoomOutBtn = container.querySelector('.zoom-out');
+            const resetBtn = container.querySelector('.reset-zoom');
+            const fullscreenBtn = container.querySelector('.fullscreen');
+
+            function updateTransform() {
+                mermaidElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+                if (scale > 1) {
+                container.classList.add('zoomed');
+                } else {
+                container.classList.remove('zoomed');
+                }
+
+                mermaidElement.style.cursor = isDragging ? 'grabbing' : 'grab';
+            }
+
+            if (zoomInBtn) {
+                zoomInBtn.addEventListener('click', () => {
+                scale = Math.min(scale * 1.25, 4);
+                updateTransform();
+                });
+            }
+
+            if (zoomOutBtn) {
+                zoomOutBtn.addEventListener('click', () => {
+                scale = Math.max(scale / 1.25, 0.3);
+                if (scale <= 1) {
+                    translateX = 0;
+                    translateY = 0;
+                }
+                updateTransform();
+                });
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+                updateTransform();
+                });
+            }
+
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', () => {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
+                });
+            }
+
+            // Mouse Events
+            mermaidElement.addEventListener('mousedown', (e) => {
+                if (isTouch) return; // 如果是触摸设备，忽略鼠标事件
+
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                mermaidElement.style.cursor = 'grabbing';
+                updateTransform();
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging && !isTouch) {
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging && !isTouch) {
+                isDragging = false;
+                mermaidElement.style.cursor = 'grab';
+                updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                if (isDragging && !isTouch) {
+                isDragging = false;
+                mermaidElement.style.cursor = 'grab';
+                updateTransform();
+                }
+            });
+
+            // 获取两点之间的距离
+            function getTouchDistance(touch1, touch2) {
+                return Math.hypot(
+                touch2.clientX - touch1.clientX,
+                touch2.clientY - touch1.clientY
+                );
+            }
+
+            // Touch Events - 触摸事件处理
+            mermaidElement.addEventListener('touchstart', (e) => {
+                isTouch = true;
+                touchStartTime = Date.now();
+
+                if (e.touches.length === 1) {
+                // 单指拖动
+                isPinching = false;
+                isDragging = true;
+
+                const touch = e.touches[0];
+                startX = touch.clientX - translateX;
+                startY = touch.clientY - translateY;
+
+                } else if (e.touches.length === 2) {
+                // 双指缩放
+                isPinching = true;
+                isDragging = false;
+
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialDistance = getTouchDistance(touch1, touch2);
+                initialScale = scale;
+                }
+
+                e.preventDefault();
+            }, { passive: false });
+
+            mermaidElement.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1 && isDragging && !isPinching) {
+                // 单指拖动
+                const touch = e.touches[0];
+                translateX = touch.clientX - startX;
+                translateY = touch.clientY - startY;
+                updateTransform();
+
+                } else if (e.touches.length === 2 && isPinching) {
+                // 双指缩放
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentDistance = getTouchDistance(touch1, touch2);
+
+                if (initialDistance > 0) {
+                    const newScale = Math.min(Math.max(
+                    initialScale * (currentDistance / initialDistance),
+                    0.3
+                    ), 4);
+                    scale = newScale;
+                    updateTransform();
+                }
+                }
+
+                e.preventDefault();
+            }, { passive: false });
+
+            mermaidElement.addEventListener('touchend', (e) => {
+                // 重置状态
+                if (e.touches.length === 0) {
+                isDragging = false;
+                isPinching = false;
+                initialDistance = 0;
+
+                // 延迟重置isTouch，避免鼠标事件立即触发
+                setTimeout(() => {
+                    isTouch = false;
+                }, 100);
+                } else if (e.touches.length === 1 && isPinching) {
+                // 从双指变为单指，切换为拖动模式
+                isPinching = false;
+                isDragging = true;
+
+                const touch = e.touches[0];
+                startX = touch.clientX - translateX;
+                startY = touch.clientY - translateY;
+                }
+
+                updateTransform();
+            });
+
+            mermaidElement.addEventListener('touchcancel', (e) => {
+                isDragging = false;
+                isPinching = false;
+                initialDistance = 0;
+
+                setTimeout(() => {
+                isTouch = false;
+                }, 100);
+
+                updateTransform();
+            });
+
+            // Enhanced wheel zoom with better center point handling
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                const newScale = Math.min(Math.max(scale * delta, 0.3), 4);
+
+                // Adjust translation to zoom towards center
+                if (newScale !== scale) {
+                const scaleDiff = newScale / scale;
+                translateX = translateX * scaleDiff;
+                translateY = translateY * scaleDiff;
+                scale = newScale;
+
+                if (scale <= 1) {
+                    translateX = 0;
+                    translateY = 0;
+                }
+
+                updateTransform();
+                }
+            });
+
+            // Initialize display
+            updateTransform();
+            });
+        }
+
+        // Initialize mermaid controls after page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMermaidControls();
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight active section in TOC
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const tocLinks = document.querySelectorAll('.toc a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tocLinks.forEach(link => {
+                link.classList.remove('text-blue-600', 'font-medium');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('text-blue-600', 'font-medium');
+                }
+            });
+        });
+    </script>
+  
+
+</body></html>
